@@ -11,6 +11,7 @@ trait Application extends js.Object {
 
   def listen(port: Double, callback: js.Function0[Unit]): Server = js.native
   def use(handler: js.Function3[_, _, _, _]): Unit
+  def use[E <: js.Object](handler: ErrorHandler[E]): Unit
   def use(path: PathParams, handler: RequestHandler*): Unit
   def delete(path: PathParams, handlers: RequestHandler*): Unit
   def get(path: PathParams, handlers: RequestHandler*): Unit
