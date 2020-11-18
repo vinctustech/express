@@ -1,0 +1,21 @@
+express
+=======
+
+*express* is a Scala.js facade for the "express" NPM package.
+
+Example
+-------
+
+```scala
+import com.vinctus.express.App
+
+object Main extends App {
+
+  val app = App()
+  val port = 3000
+
+  app.get("/", (_, res) => res.send("Hello World!"))
+  app.listen(port, () => println(s"Example app listening at http://localhost:$port"))
+
+}
+```
