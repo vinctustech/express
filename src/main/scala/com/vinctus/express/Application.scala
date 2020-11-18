@@ -10,7 +10,12 @@ trait Application extends js.Object {
   val locals: Dictionary[js.Any]
 
   def listen(port: Double, callback: js.Function0[Unit]): Server = js.native
-  def use(middleware: js.Any): Unit
-  def use(path: String, handlers: RequestHandler*): Unit
-  def get(path: String, handlers: RequestHandler*): Unit
+  def use(handler: js.Function3[_, _, _, _]): Unit
+  def use(path: PathParams, handler: RequestHandler*): Unit
+  def delete(path: PathParams, handlers: RequestHandler*): Unit
+  def get(path: PathParams, handlers: RequestHandler*): Unit
+  def head(path: PathParams, handlers: RequestHandler*): Unit
+  def patch(path: PathParams, handlers: RequestHandler*): Unit
+  def post(path: PathParams, handlers: RequestHandler*): Unit
+  def put(path: PathParams, handlers: RequestHandler*): Unit
 }

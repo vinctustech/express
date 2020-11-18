@@ -1,6 +1,6 @@
 name := "express"
 
-version := "0.1.0-snapshot.1"
+version := "0.1.0-snapshot.7"
 
 scalaVersion := "2.13.3"
 
@@ -30,6 +30,7 @@ libraryDependencies ++= Seq(
 
 npmDependencies in Compile ++= Seq(
   "@types/node" -> "14.14.7",
+  "@types/express" -> "4.17.9",
 )
 
 libraryDependencies ++= Seq(
