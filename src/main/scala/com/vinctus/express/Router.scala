@@ -4,8 +4,8 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
 @js.native
-trait Router extends Handler {
-  def get(path: String, handlers: Handler*): Unit
+trait Router extends RequestHandler {
+  def get(path: String, handlers: RequestHandler*): Unit
 }
 
 @JSImport("express", "Router")
