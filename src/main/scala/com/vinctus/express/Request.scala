@@ -5,15 +5,17 @@ import scala.scalajs.js.|
 
 @js.native
 trait Request extends js.Object {
-  def params[T <: js.Object]: T = js.native
-  def asJsonObject[T <: js.Object]: T = js.native
   val baseUrl: String = js.native
+  val body: js.Dictionary[js.Any] = js.native
+  def get(field: String): String = js.native
+  val params: js.Dictionary[String] = js.native
+  def asJsonObject[T <: js.Object]: T = js.native
   val originalUrl: String = js.native
   val path: String = js.native
   val protocol: String = js.native
   val secure: Boolean = js.native
   def bodyJson[T <: js.Object]: T = js.native
-  val cookies: js.Dictionary[js.Object] = js.native
+  val cookies: js.Dictionary[String] = js.native
   def query[T <: js.Object]: T = js.native
   val hostname: String = js.native
   val ip: String = js.native

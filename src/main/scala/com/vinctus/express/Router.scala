@@ -5,12 +5,12 @@ import scala.scalajs.js.annotation.JSImport
 
 @js.native
 trait Router extends RequestHandler {
-  def delete(path: PathParams, handlers: RequestHandler*): Unit
-  def get(path: PathParams, handlers: RequestHandler*): Unit
-  def head(path: PathParams, handlers: RequestHandler*): Unit
-  def patch(path: PathParams, handlers: RequestHandler*): Unit
-  def post(path: PathParams, handlers: RequestHandler*): Unit
-  def put(path: PathParams, handlers: RequestHandler*): Unit
+  def delete(path: PathParams, handlers: RequestHandler*): Router
+  def get(path: PathParams, handlers: RequestHandler*): Router
+  def head(path: PathParams, handlers: RequestHandler*): Router
+  def patch(path: PathParams, handlers: RequestHandler*): Router
+  def post(path: PathParams, handlers: RequestHandler*): Router
+  def put(path: PathParams, handlers: RequestHandler*): Router
 }
 
 @JSImport("express", "Router")
