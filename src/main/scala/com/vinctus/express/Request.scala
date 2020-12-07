@@ -22,6 +22,9 @@ trait Request extends js.Object {
   val fresh: Boolean = js.native
   val stale: Boolean = js.native
 
+  val method: String = js.native
+  val url: String = js.native
+
   def accepts(): js.Array[String] = js.native
   def accepts(t: String): String | Boolean = js.native
   def accepts(t: js.Array[String]): String | Boolean = js.native
