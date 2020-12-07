@@ -12,14 +12,14 @@ trait Application extends js.Object {
 
   def listen(port: Double, callback: js.Function0[Unit]): Server = js.native
   @JSName("use")
-  def useHandler(handler: js.Function3[_, _, _, _]): Unit
-  def use(handler: RequestHandler): Unit
-  def use[E <: js.Object](handler: ErrorHandler[E]): Unit
-  def use(path: PathParams, handler: RequestHandler*): Unit
-  def delete(path: PathParams, handlers: RequestHandler*): Unit
-  def get(path: PathParams, handlers: RequestHandler*): Unit
-  def head(path: PathParams, handlers: RequestHandler*): Unit
-  def patch(path: PathParams, handlers: RequestHandler*): Unit
-  def post(path: PathParams, handlers: RequestHandler*): Unit
-  def put(path: PathParams, handlers: RequestHandler*): Unit
+  def useHandler(handler: js.Function3[_, _, _, _]): Unit = js.native
+  def use(handler: RequestHandler): Unit = js.native
+  def use[E <: js.Object](handler: ErrorHandler[E]): Unit = js.native
+  def use(path: PathParams, handler: RequestHandler*): Unit = js.native
+  def delete(path: PathParams, handlers: RequestHandler*): Unit = js.native
+  def get(path: PathParams, handlers: RequestHandler*): Unit = js.native
+  def head(path: PathParams, handlers: RequestHandler*): Unit = js.native
+  def patch(path: PathParams, handlers: RequestHandler*): Unit = js.native
+  def post(path: PathParams, handlers: RequestHandler*): Unit = js.native
+  def put(path: PathParams, handlers: RequestHandler*): Unit = js.native
 }
