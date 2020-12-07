@@ -16,7 +16,7 @@ trait Request extends js.Object {
   val secure: Boolean = js.native
   def bodyJson[T <: js.Object]: T = js.native
   val cookies: js.Dictionary[String] = js.native
-  def query[T <: js.Object]: T = js.native
+  def query: js.Dictionary[String] = js.native
   val hostname: String = js.native
   val ip: String = js.native
   val fresh: Boolean = js.native
