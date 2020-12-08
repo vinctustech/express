@@ -7,7 +7,7 @@ import scala.scalajs.js.|
 @js.native
 trait Response extends js.Object {
   val headersSent: Boolean = js.native
-  val locals: js.Object = js.native
+  val locals: js.Dynamic = js.native
   val app: App = js.native
   def status(v: Int): Response = js.native
   def json(v: js.Any): Unit = js.native
