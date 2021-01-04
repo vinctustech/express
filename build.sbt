@@ -1,6 +1,6 @@
 name := "express"
 
-version := "0.1.0-snapshot.25"
+version := "0.1.0-snapshot.26"
 
 scalaVersion := "2.13.4"
 
@@ -38,9 +38,9 @@ libraryDependencies ++= Seq(
   //"org.scalacheck" %%% "scalacheck" % "1.14.1" % "test"
 )
 
-libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-java-time" % "1.0.0"
-)
+//libraryDependencies ++= Seq(
+//  "org.scala-js" %%% "scalajs-java-time" % "1.0.0"
+//)
 
 mainClass in (Compile, run) := Some( s"${organization.value}.${name.value.replace('-', '_')}.Main" )
 
