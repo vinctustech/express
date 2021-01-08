@@ -1,7 +1,7 @@
 express
 =======
 
-*express* is a Scala.js facade for the "express" NPM package.
+*express* is a Scala.js facade and interface layer for the "express" NPM package.
 
 Example
 -------
