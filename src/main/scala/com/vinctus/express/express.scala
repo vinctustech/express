@@ -105,7 +105,7 @@ package object express {
   case class Result(status: Int, mime: String, body: String)
 
   object json extends Dynamic {
-    def applyDynamicNamed(method: String)(properties: (String, Any)*): String = properties.map{case (k, v) => s"  \"$k\": $v"}.mkString("{\n", ",\n", "}\n")
+    def applyDynamicNamed(method: String)(properties: (String, Any)*): String = properties.map{case (k, v) => s"\n  \"$k\": ${if (v.isInstanceOf[String]) s"\"$v\"" else v.toString}"}.mkString("{", ",", "}")
   }
 
 }
