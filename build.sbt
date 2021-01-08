@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
 
 npmDependencies in Compile ++= Seq(
   "@types/node" -> "14.14.7",
-  "@types/express" -> "4.17.9",
+//  "@types/express" -> "4.17.9",
 )
 
 libraryDependencies ++= Seq(
