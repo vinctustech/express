@@ -51,31 +51,31 @@ package object express {
     else toMap(obj)
   }
 
-  class Result(val result: Any) extends js.Object
+  class JSResult(val result: Any) extends js.Object
 
   def asyncHandler[T, R](f: T => R, res: Response, next: js.Dynamic)(future: => Future[T]): js.Promise[_] =
     future.andThen {
-      case Success(r) => res.json(new Result(f(r)))
+      case Success(r) => res.json(new JSResult(f(r)))
       case Failure(e) => next(e.getMessage)
     }.toJSPromise
 
   def asyncHandler(res: Response, next: js.Dynamic)(future: => Future[Any]): js.Promise[Any] =
     future.andThen {
-      case Success(r) => res.json(new Result(r))
+      case Success(r) => res.json(new JSResult(r))
       case Failure(e) => next(e.getMessage)
     }.toJSPromise
 
   def asyncHandler(future: => Future[Any]): RequestHandler =
     (_, res: Response, next: js.Dynamic) =>
       future.andThen {
-        case Success(r) => res.json(new Result(r))
+        case Success(r) => res.json(new JSResult(r))
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
 
   def requestHandler(future: => Future[Any]): RequestHandler =
     (_, res: Response, next: js.Dynamic) =>
       future.andThen {
-        case Success(r) => res.json(new Result(toJS(r)))
+        case Success(r) => res.json(new JSResult(toJS(r)))
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
 
@@ -95,11 +95,17 @@ package object express {
     }
   }
 
-  def requestHandler(handler: SRequest => Future[Any]): RequestHandler =
+  def requestHandler(handler: SRequest => Future[Result]): RequestHandler =
     (req: Request, res: Response, next: js.Dynamic) =>
       handler(new SRequest(req)).andThen {
-        case Success(r) => res.json(new Result(toJS(r)))
+        case Success(r) => res.json(new JSResult(toJS(r)))
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
+
+  case class Result(status: Int, mime: String, body: String)
+
+  object json extends Dynamic {
+    def applyDynamicNamed(method: String)(properties: (String, Any)*): String = properties.map{case (k, v) => s"  \"$k\": $v"}.mkString("{\n", ",\n", "}\n")
+  }
 
 }
