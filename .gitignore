@@ -21,3 +21,6 @@ project/plugins/project/
 .directory
 .idea/
 .bsp/
+
+.env
+OQLConnection.scala

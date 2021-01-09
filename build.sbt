@@ -1,10 +1,10 @@
 name := "express"
 
-version := "0.1.0-snapshot.28"
+version := "0.1.0-snapshot.29"
 
 scalaVersion := "2.13.4"
 
-scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials")
+scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials", "-language:dynamics", "-Xasync")
 
 organization := "com.vinctus"
 
@@ -13,6 +13,8 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
 resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
+
+externalResolvers += "OQL" at "https://maven.pkg.github.com/vinctustech/oql"
 
 enablePlugins(ScalaJSPlugin)
 
@@ -37,6 +39,11 @@ libraryDependencies ++= Seq(
 npmDependencies in Compile ++= Seq(
   "@types/node" -> "14.14.7",
 //  "@types/express" -> "4.17.9",
+
+//  "pg" -> "8.5.1",
+//  "@types/pg" -> "7.14.7",
+//
+//  "dotenv" -> "8.2.0"
 )
 
 libraryDependencies ++= Seq(
@@ -44,9 +51,15 @@ libraryDependencies ++= Seq(
   //"org.scalacheck" %%% "scalacheck" % "1.14.1" % "test"
 )
 
-//libraryDependencies ++= Seq(
-//  "org.scala-js" %%% "scalajs-java-time" % "1.0.0"
-//)
+libraryDependencies ++= Seq(
+  "org.scala-lang.modules" %% "scala-async" % "0.10.0",
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
+)
+
+libraryDependencies ++= Seq(
+  "io.github.cquiroz" %%% "scala-java-time" % "2.0.0" % "test",
+  "com.vinctus" %%% "-vinctus-oql" % "0.1.19" % "test"
+)
 
 mainClass in (Compile, run) := Some( s"${organization.value}.${name.value.replace('-', '_')}.Main" )
 

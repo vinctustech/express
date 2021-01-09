@@ -1,5 +1,7 @@
 package com.vinctus
 
+import typings.node.processMod.global.process
+
 import java.time.{Instant, LocalDate}
 import scala.collection.immutable.ListMap
 import scala.concurrent.Future
@@ -14,6 +16,10 @@ package object express {
   type RequestHandler = js.Function3[Request, Response, js.Dynamic, Any]
   type ErrorHandler[E <: js.Object] = js.Function4[E, Request, Response, js.Dynamic, Any]
   type PathParams = String | js.RegExp | Array[String | js.RegExp]
+
+  object env extends Dynamic {
+    def selectDynamic(field: String): String = process.env(field).get
+  }
 
   def toJS(a: Any): js.Any =
     a match {
@@ -98,14 +104,25 @@ package object express {
   def requestHandler(handler: SRequest => Future[Result]): RequestHandler =
     (req: Request, res: Response, next: js.Dynamic) =>
       handler(new SRequest(req)).andThen {
-        case Success(r) => res.json(new JSResult(toJS(r)))
+        case Success(Result(code, mime, body)) =>
+          res.set("Content-Type", mime)
+          res.status(code).send(body)
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
 
-  case class Result(status: Int, mime: String, body: String)
+  case class Result(code: Int, mime: String, body: String)
 
   object json extends Dynamic {
-    def applyDynamicNamed(method: String)(properties: (String, Any)*): String = properties.map{case (k, v) => s"\n  \"$k\": ${if (v.isInstanceOf[String]) s"\"$v\"" else v.toString}"}.mkString("{", ",", "}")
+    def applyDynamicNamed(method: String)(properties: (String, Any)*): Result =
+      Result(
+        200,
+        "application/json",
+        properties
+          .map {
+            case (k, v) => s"\n  ${'"'}$k${'"'}: ${if (v.isInstanceOf[String]) s"${'"'}$v${'"'}" else v.toString}"
+          }
+          .mkString("{", ",", "}")
+      )
   }
 
 }
