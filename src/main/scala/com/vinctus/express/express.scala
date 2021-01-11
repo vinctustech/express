@@ -113,16 +113,90 @@ package object express {
   case class Result(code: Int, mime: String, body: String)
 
   object json extends Dynamic {
+    private def toJson(pairs: Seq[(String, Any)], tab: Int = 2, format: Boolean = false): String = {
+      val buf = new StringBuilder
+      var level = 0
+
+      def ln(): Unit =
+        if (format)
+          buf += '\n'
+
+      def indent(): Unit = {
+        ln()
+        level += tab
+        margin()
+      }
+
+      def dedent(): Unit = {
+        ln()
+        level -= tab
+        margin()
+      }
+
+      def margin(): Unit =
+        if (format)
+          buf ++= " " * level
+
+      def aggregate[T](seq: Seq[T])(render: T => Unit): Unit = {
+        val it = seq.iterator
+
+        if (it.nonEmpty)
+          render(it.next())
+
+        while (it.hasNext) {
+          buf += ','
+          ln()
+          margin()
+          render(it.next())
+        }
+      }
+
+      def jsonValue(value: Any): Unit = value match {
+        case _: Double | _: Int | _: Boolean | null => buf ++= String.valueOf(value)
+        case m: Map[_, _]                           => jsonObject(m.toSeq.asInstanceOf[Seq[(String, Any)]])
+        case s: Seq[_] if s.isEmpty                 => buf ++= "[]"
+        case s: Seq[_] =>
+          buf += '['
+          indent()
+          aggregate(s)(jsonValue)
+          dedent()
+          buf += ']'
+        case _ =>
+          buf += '"'
+          buf ++= value.toString
+          buf += '"'
+      }
+
+      def jsonObject(pairs: Seq[(String, Any)]): Unit =
+        if (pairs.isEmpty)
+          buf ++= "{}"
+        else {
+          buf += '{'
+          indent()
+          aggregate(pairs) {
+            case (k, v) =>
+              jsonValue(k)
+              buf ++= (if (format) ": " else ":")
+              jsonValue(v)
+          }
+          dedent()
+          buf += '}'
+        }
+
+      jsonObject(pairs)
+      buf.toString
+    }
+
     def applyDynamicNamed(method: String)(properties: (String, Any)*): Result =
       Result(
         200,
         "application/json",
-        properties
-          .map {
-            case (k, v) => s"\n  ${'"'}$k${'"'}: ${if (v.isInstanceOf[String]) s"${'"'}$v${'"'}" else v.toString}"
-          }
-          .mkString("{", ",", "}")
+        toJson(properties)
       )
+  }
+
+  object map extends Dynamic {
+    def applyDynamicNamed(method: String)(properties: (String, Any)*): Map[String, Any] = properties.toMap
   }
 
 }
