@@ -57,33 +57,26 @@ package object express {
     else toMap(obj)
   }
 
-  class JSResult(val result: Any) extends js.Object
-
-  def asyncHandler[T, R](f: T => R, res: Response, next: js.Dynamic)(future: => Future[T]): js.Promise[_] =
-    future.andThen {
-      case Success(r) => res.json(new JSResult(f(r)))
-      case Failure(e) => next(e.getMessage)
-    }.toJSPromise
-
-  def asyncHandler(res: Response, next: js.Dynamic)(future: => Future[Any]): js.Promise[Any] =
-    future.andThen {
-      case Success(r) => res.json(new JSResult(r))
-      case Failure(e) => next(e.getMessage)
-    }.toJSPromise
-
-  def asyncHandler(future: => Future[Any]): RequestHandler =
-    (_, res: Response, next: js.Dynamic) =>
-      future.andThen {
-        case Success(r) => res.json(new JSResult(r))
-        case Failure(e) => next(e.getMessage)
-      }.toJSPromise
-
-  def requestHandler(future: => Future[Any]): RequestHandler =
-    (_, res: Response, next: js.Dynamic) =>
-      future.andThen {
-        case Success(r) => res.json(new JSResult(toJS(r)))
-        case Failure(e) => next(e.getMessage)
-      }.toJSPromise
+//  class JSResult(val result: Any) extends js.Object
+//
+//  def asyncHandler[T, R](f: T => R, res: Response, next: js.Dynamic)(future: => Future[T]): js.Promise[_] =
+//    future.andThen {
+//      case Success(r) => res.json(new JSResult(f(r)))
+//      case Failure(e) => next(e.getMessage)
+//    }.toJSPromise
+//
+//  def asyncHandler(res: Response, next: js.Dynamic)(future: => Future[Any]): js.Promise[Any] =
+//    future.andThen {
+//      case Success(r) => res.json(new JSResult(r))
+//      case Failure(e) => next(e.getMessage)
+//    }.toJSPromise
+//
+//  def asyncHandler(future: => Future[Any]): RequestHandler =
+//    (_, res: Response, next: js.Dynamic) =>
+//      future.andThen {
+//        case Success(r) => res.json(new JSResult(r))
+//        case Failure(e) => next(e.getMessage)
+//      }.toJSPromise
 
   class SRequest(req: Request) {
     object params extends Dynamic {
@@ -101,7 +94,16 @@ package object express {
     }
   }
 
-  def requestHandler(handler: SRequest => Future[Result]): RequestHandler =
+  def asyncHandler(future: => Future[Result]): RequestHandler =
+    (_, res: Response, next: js.Dynamic) =>
+      future.andThen {
+        case Success(Result(code, mime, body)) =>
+          res.set("Content-Type", mime)
+          res.status(code).send(body)
+        case Failure(e) => next(e.getMessage)
+      }.toJSPromise
+
+  def asyncHandler(handler: SRequest => Future[Result]): RequestHandler =
     (req: Request, res: Response, next: js.Dynamic) =>
       handler(new SRequest(req)).andThen {
         case Success(Result(code, mime, body)) =>
@@ -109,6 +111,30 @@ package object express {
           res.status(code).send(body)
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
+
+  def requestHandler(result: => Result): RequestHandler = { (_, res: Response, next: js.Dynamic) =>
+    try {
+      result match {
+        case Result(code, mime, body) =>
+          res.set("Content-Type", mime)
+          res.status(code).send(body)
+      }
+    } catch {
+      case e: Exception => next(e.getMessage)
+    }
+  }
+
+  def requestHandler(handler: SRequest => Result): RequestHandler = { (req: Request, res: Response, next: js.Dynamic) =>
+    try {
+      handler(new SRequest(req)) match {
+        case Result(code, mime, body) =>
+          res.set("Content-Type", mime)
+          res.status(code).send(body)
+      }
+    } catch {
+      case e: Exception => next(e.getMessage)
+    }
+  }
 
   case class Result(code: Int, mime: String, body: String)
 
@@ -196,7 +222,11 @@ package object express {
   }
 
   object map extends Dynamic {
-    def applyDynamicNamed(method: String)(properties: (String, Any)*): Map[String, Any] = properties.toMap
+    def applyDynamicNamed(method: String)(properties: (String, Any)*): Map[String, Any] =
+      method match {
+        case "apply" => properties.toMap
+//        case "clas"  =>
+      }
   }
 
 }
