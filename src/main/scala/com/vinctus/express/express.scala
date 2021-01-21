@@ -11,6 +11,8 @@ import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSConverters._
 
+import com.vinctus.sjs_utils.Implicits._
+
 package object express {
   type Next = js.Function1[js.Any, Unit]
   type RequestHandler = js.Function3[Request, Response, js.Dynamic, Any]
@@ -179,6 +181,7 @@ package object express {
 
       def jsonValue(value: Any): Unit = value match {
         case _: Double | _: Int | _: Boolean | null => buf ++= String.valueOf(value)
+        case p: Product                             => jsonObject(p)
         case m: Map[_, _]                           => jsonObject(m.toSeq.asInstanceOf[Seq[(String, Any)]])
         case s: Seq[_] if s.isEmpty                 => buf ++= "[]"
         case s: Seq[_] =>
