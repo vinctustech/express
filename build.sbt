@@ -1,6 +1,6 @@
 name := "express"
 
-version := "0.1.0-snapshot.40"
+version := "0.1.0-snapshot.41"
 
 scalaVersion := "2.13.4"
 
@@ -57,9 +57,9 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.vinctus" %%% "sjs-utils" % "0.1.0-snapshot.5",
+  "com.vinctus" %%% "sjs-utils" % "0.1.0-snapshot.9",
   "io.github.cquiroz" %%% "scala-java-time" % "2.0.0" % "test",
-  "com.vinctus" %%% "-vinctus-oql" % "0.1.34" % "test"
+  "com.vinctus" %%% "-vinctus-oql" % "0.1.41" % "test"
 )
 
 mainClass in (Compile, run) := Some( s"${organization.value}.${name.value.replace('-', '_')}.Main" )
