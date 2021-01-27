@@ -1,12 +1,17 @@
+
 name := "express"
 
-version := "0.1.0-snapshot.41"
+version := "0.1.0-snapshot.42"
 
 scalaVersion := "2.13.4"
 
 scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials", "-language:dynamics", "-Xasync")
 
 organization := "com.vinctus"
+
+githubOwner := "vinctustech"
+
+githubRepository := "oql"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -57,9 +62,9 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.vinctus" %%% "sjs-utils" % "0.1.0-snapshot.9",
+  "com.vinctus" %%% "sjs-utils" % "0.1.0-snapshot.10",
   "io.github.cquiroz" %%% "scala-java-time" % "2.0.0" % "test",
-  "com.vinctus" %%% "-vinctus-oql" % "0.1.41" % "test"
+  "com.vinctus" %%% "-vinctus-oql" % "0.1.45" % "test"
 )
 
 mainClass in (Compile, run) := Some( s"${organization.value}.${name.value.replace('-', '_')}.Main" )
