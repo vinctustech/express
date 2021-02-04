@@ -10,8 +10,8 @@ import scala.scalajs.js.|
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSConverters._
-
 import com.vinctus.sjs_utils.Implicits._
+import com.vinctus.sjs_utils.toMap
 
 package object express {
   type Next = js.Function1[js.Any, Unit]
@@ -21,42 +21,6 @@ package object express {
 
   object env extends Dynamic {
     def selectDynamic(field: String): String = process.env(field).get
-  }
-
-  def toJS(a: Any): js.Any =
-    a match {
-      case date: LocalDate  => new js.Date(date.getYear, date.getMonthValue - 1, date.getDayOfMonth)
-      case instant: Instant => instant.toString
-      case d: BigDecimal    => d.toDouble
-      case d: Double        => d
-      case n: Int           => n
-      case b: Boolean       => b
-      case null             => null
-      case l: Seq[_]        => l map toJS toJSArray
-      case m: Map[_, _] =>
-        (m map { case (k, v) => k -> toJS(v) })
-          .asInstanceOf[Map[String, Any]]
-          .toJSDictionary
-      case s => s.toString
-    }
-
-  def jsObject(v: Any): Boolean =
-    js.typeOf(v) == "object" && (v != null) && !v.isInstanceOf[Long] && !v.isInstanceOf[js.Date] && !v
-      .isInstanceOf[js.Array[_]]
-
-  def toMap(obj: js.UndefOr[js.Any]): ListMap[String, Any] = {
-    def toMap(obj: js.Any): ListMap[String, Any] = {
-      var map: ListMap[String, Any] = obj.asInstanceOf[js.Dictionary[js.Any]].to(ListMap)
-
-      for ((k, v) <- map)
-        if (jsObject(v))
-          map = map + ((k, toMap(v.asInstanceOf[js.Any])))
-
-      map
-    }
-
-    if (!obj.isDefined) null
-    else toMap(obj)
   }
 
 //  class JSResult(val result: Any) extends js.Object
@@ -179,24 +143,25 @@ package object express {
         }
       }
 
-      def jsonValue(value: Any): Unit = value match {
-        case _: Double | _: Int | _: Boolean | null => buf ++= String.valueOf(value)
-        case p: Product                             => jsonObject(p)
-        case m: Map[_, _]                           => jsonObject(m.toSeq.asInstanceOf[Seq[(String, Any)]])
-        case s: Seq[_] if s.isEmpty                 => buf ++= "[]"
-        case s: Seq[_] =>
-          buf += '['
-          indent()
-          aggregate(s)(jsonValue)
-          dedent()
-          buf += ']'
-        case _ =>
-          buf += '"'
-          buf ++= value.toString
-          buf += '"'
-      }
+      def jsonValue(value: Any): Unit =
+        value match {
+          case _: Double | _: Int | _: Boolean | null => buf ++= String.valueOf(value)
+          case m: Map[_, _]                           => jsonObject(m.toSeq.asInstanceOf[Seq[(String, Any)]])
+          case s: Seq[_] if s.isEmpty                 => buf ++= "[]"
+          case s: Seq[_] =>
+            buf += '['
+            indent()
+            aggregate(s)(jsonValue)
+            dedent()
+            buf += ']'
+          case p: Product => jsonObject(p)
+          case _ =>
+            buf += '"'
+            buf ++= value.toString
+            buf += '"'
+        }
 
-      def jsonObject(pairs: Seq[(String, Any)]): Unit =
+      def jsonObject(pairs: Seq[(String, Any)]): Unit = {
         if (pairs.isEmpty)
           buf ++= "{}"
         else {
@@ -211,6 +176,7 @@ package object express {
           dedent()
           buf += '}'
         }
+      }
 
       jsonObject(pairs)
       buf.toString

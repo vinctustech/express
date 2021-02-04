@@ -6,7 +6,7 @@ import scala.scalajs.js.|
 @js.native
 trait Request extends js.Object {
   val baseUrl: String = js.native
-  val body: js.Object = js.native
+  val body: js.Dynamic = js.native
   def get(field: String): js.UndefOr[String] = js.native
   val params: js.Dictionary[String] = js.native
   def asJsonObject[T <: js.Object]: T = js.native
