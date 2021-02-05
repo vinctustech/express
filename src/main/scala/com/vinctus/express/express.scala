@@ -155,9 +155,9 @@ package object express {
             dedent()
             buf += ']'
           case p: Product => jsonObject(p.productElementNames zip p.productIterator toList)
-          case s: String =>
+          case _: String | _: Instant =>
             buf += '"'
-            buf ++= s
+            buf ++= value.toString.replace("\\", "\\\\").replace("\"", "\\\"")
             buf += '"'
           case o: js.Object => jsonObject(o.asInstanceOf[js.Dictionary[js.Any]].toList)
         }
