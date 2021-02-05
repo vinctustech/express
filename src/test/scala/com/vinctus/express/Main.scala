@@ -29,6 +29,8 @@ object Main extends App {
   val o = new O(123, "asdf")
 
   println(json(result = o))
+  println(json(result = Instant.now))
+  println(json(result = """\asdf\ "asdf""""))
 
 }
 
