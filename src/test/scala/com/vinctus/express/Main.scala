@@ -32,6 +32,10 @@ object Main extends App {
   println(json(result = Instant.now))
   println(json(result = """\asdf\ "asdf""""))
 
+  val a = js.Array(1, 2, 3)
+
+  println(json(result = a))
+
 }
 
 //object Main extends App {
