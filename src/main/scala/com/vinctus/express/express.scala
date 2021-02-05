@@ -160,7 +160,6 @@ package object express {
             buf += '"'
             buf ++= value.toString.replace("\\", "\\\\").replace("\"", "\\\"")
             buf += '"'
-//          case a: js.Array[js.Any] =>
           case o: js.Object => jsonObject(o.asInstanceOf[js.Dictionary[js.Any]].toList)
         }
 
