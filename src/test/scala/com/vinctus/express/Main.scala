@@ -12,11 +12,23 @@ import scala.scalajs.js
 
 object Main extends App {
 
-  val app = Express()
-  val port = 3000
+//  val app = Express()
+//  val port = 3000
+//
+//  app.get("/", (_, res, _) => res.send("Hello World!"))
+//  app.listen(port, () => println(s"Example app listening at http://localhost:$port"))
 
-  app.get("/", (_, res, _) => res.send("Hello World!"))
-  app.listen(port, () => println(s"Example app listening at http://localhost:$port"))
+  case class C(a: Int, b: String)
+
+  val c = C(123, "asdf")
+
+  println(json(result = c))
+
+  class O(val a: Int, val b: String) extends js.Object
+
+  val o = new O(123, "asdf")
+
+  println(json(result = o))
 
 }
 

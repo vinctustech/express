@@ -154,11 +154,12 @@ package object express {
             aggregate(s)(jsonValue)
             dedent()
             buf += ']'
-          case p: Product => jsonObject(p)
-          case _ =>
+          case p: Product => jsonObject(p.productElementNames zip p.productIterator toList)
+          case s: String =>
             buf += '"'
-            buf ++= value.toString
+            buf ++= s
             buf += '"'
+          case o: js.Object => jsonObject(o.asInstanceOf[js.Dictionary[js.Any]].toList)
         }
 
       def jsonObject(pairs: Seq[(String, Any)]): Unit = {
