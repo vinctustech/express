@@ -154,11 +154,15 @@ package object express {
             aggregate(s)(jsonValue)
             dedent()
             buf += ']'
-          case a: js.Array[js.Any] => jsonValue(a.toList)
-          case p: Product          => jsonObject(p.productElementNames zip p.productIterator toList)
+          case a: js.Array[_] => jsonValue(a.toList)
+          case p: Product     => jsonObject(p.productElementNames zip p.productIterator toList)
           case _: String | _: Instant =>
             buf += '"'
             buf ++= value.toString.replace("\\", "\\\\").replace("\"", "\\\"")
+            buf += '"'
+          case d: js.Date =>
+            buf += '"'
+            buf ++= d.toISOString()
             buf += '"'
           case o: js.Object => jsonObject(o.asInstanceOf[js.Dictionary[js.Any]].toList)
         }
