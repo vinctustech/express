@@ -45,6 +45,8 @@ package object express {
 //      }.toJSPromise
 
   class SRequest(req: Request) {
+    def body: js.Dynamic = req.body
+
     object params extends Dynamic {
       def applyDynamic(method: String)(capture: Int): String = req.params(capture.toString)
 
@@ -53,6 +55,8 @@ package object express {
 
     object query extends Dynamic {
       def apply(): Map[String, Any] = toMap(req.query)
+
+      def obj: js.Object = req.query.asInstanceOf[js.Object]
 
       def applyDynamic(method: String)(capture: Int): String = req.query(capture.toString)
 
