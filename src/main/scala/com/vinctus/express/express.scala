@@ -66,7 +66,7 @@ package object express {
 
   private def send(res: Response, result: Result): Unit =
     result match {
-      case Result(code, None, None)       => res.status(code)
+      case Result(code, None, None)       => res.sendStatus(code)
       case Result(code, None, Some(body)) => res.status(code).send(body)
       case Result(code, Some(mime), Some(body)) =>
         res.set("Content-Type", mime)

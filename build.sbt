@@ -1,6 +1,6 @@
 name := "express"
 
-version := "0.1.0-snapshot.50"
+version := "0.1.0-snapshot.51"
 
 scalaVersion := "2.13.4"
 
