@@ -6,7 +6,7 @@ import java.time.{Instant, LocalDate}
 import scala.collection.immutable.{AbstractMap, ListMap}
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js.|
+import scala.scalajs.js.{Dictionary, |}
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSConverters._
@@ -45,7 +45,7 @@ package object express {
 //      }.toJSPromise
 
   class SRequest(req: Request) {
-    def body: js.Dynamic = req.body
+    def body: Dictionary[js.Any] = req.body
 
     object params extends Dynamic {
       def applyDynamic(method: String)(capture: Int): String = req.params(capture.toString)
