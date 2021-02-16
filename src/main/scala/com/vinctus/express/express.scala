@@ -45,7 +45,7 @@ package object express {
 //      }.toJSPromise
 
   class SRequest(req: Request) {
-    def bodyMap: Dictionary[js.Any] = req.body
+    def bodyMap: Dictionary[String] = req.body
     def body: js.Dynamic = req.body.asInstanceOf[js.Dynamic]
 
     object params extends Dynamic {
