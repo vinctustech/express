@@ -6,7 +6,7 @@ import java.time.{Instant, LocalDate}
 import scala.collection.immutable.{AbstractMap, ListMap}
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js.{Dictionary, |}
+import scala.scalajs.js.|
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSConverters._
@@ -44,54 +44,23 @@ package object express {
 //        case Failure(e) => next(e.getMessage)
 //      }.toJSPromise
 
-  class SRequest(req: Request) {
-    def bodyMap: Dictionary[String] = req.body
-    def body: js.Dynamic = req.body.asInstanceOf[js.Dynamic]
-
-    object params extends Dynamic {
-      def applyDynamic(method: String)(capture: Int): String = req.params(capture.toString)
-
-      def selectDynamic(param: String): String = req.params(param)
-    }
-
-    object query extends Dynamic {
-      def apply(): Map[String, Any] = toMap(req.query)
-
-      def obj: js.Object = req.query.asInstanceOf[js.Object]
-
-      def applyDynamic(method: String)(capture: Int): String = req.query(capture.toString)
-
-      def selectDynamic(param: String): String = req.query(param)
-    }
-  }
-
-  private def send(res: Response, result: Result): Unit =
-    result match {
-      case Result(code, None, None)       => res.sendStatus(code)
-      case Result(code, None, Some(body)) => res.status(code).send(body)
-      case Result(code, Some(mime), Some(body)) =>
-        res.set("Content-Type", mime)
-        res.status(code).send(body)
-      case Result(_, Some(_), None) => sys.error("can't have a content-type header with no content")
-    }
-
   def asyncHandler(future: => Future[Result]): RequestHandler =
     (_, res: Response, next: js.Dynamic) =>
       future.andThen {
-        case Success(r) => send(res, r)
+        case Success(r) => r.send(res)
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
 
   def asyncHandler(handler: SRequest => Future[Result]): RequestHandler =
     (req: Request, res: Response, next: js.Dynamic) =>
       handler(new SRequest(req)).andThen {
-        case Success(r) => send(res, r)
+        case Success(r) => r.send(res)
         case Failure(e) => next(e.getMessage)
       }.toJSPromise
 
   def requestHandler(result: => Result): RequestHandler = { (_, res: Response, next: js.Dynamic) =>
     try {
-      send(res, result)
+      result.send(res)
     } catch {
       case e: Exception => next(e.getMessage)
     }
@@ -99,13 +68,11 @@ package object express {
 
   def requestHandler(handler: SRequest => Result): RequestHandler = { (req: Request, res: Response, next: js.Dynamic) =>
     try {
-      send(res, handler(new SRequest(req)))
+      handler(new SRequest(req)).send(res)
     } catch {
       case e: Exception => next(e.getMessage)
     }
   }
-
-  case class Result(code: Int, mime: Option[String], body: Option[String])
 
   def json(pairs: Seq[(String, Any)], tab: Int = 2, format: Boolean = false): String = {
     val buf = new StringBuilder
@@ -188,25 +155,6 @@ package object express {
 
     jsonObject(pairs)
     buf.toString
-  }
-
-  object response extends Dynamic {
-    def enacted: Result =
-      Result(
-        HTTP.NO_CONTENT,
-        None,
-        None
-      )
-
-    def applyDynamicNamed(method: String)(properties: (String, Any)*): Result =
-      method match {
-        case "apply" =>
-          Result(
-            HTTP.OK,
-            Some("application/json"),
-            Some(json(properties))
-          )
-      }
   }
 
 }
