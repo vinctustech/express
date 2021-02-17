@@ -23,7 +23,7 @@ object response extends Dynamic {
     Result(
       HTTP.BAD_REQUEST,
       Some("application/json"),
-      Some(json(List(error -> error)))
+      Some(json(List("error" -> error)))
     )
 
   def applyDynamicNamed(method: String)(properties: (String, Any)*): Result =
