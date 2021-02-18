@@ -7,4 +7,6 @@ object HTTP {
 
   val BAD_REQUEST = 400
 
+  val INTERNAL_SERVER_ERROR = 500
+
 }

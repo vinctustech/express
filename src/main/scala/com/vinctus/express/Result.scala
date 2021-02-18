@@ -25,6 +25,12 @@ object response extends Dynamic {
       Some("application/json"),
       Some(json(List("error" -> error)))
     )
+  def internalServerError(error: String = "internal server error"): Result =
+    Result(
+      HTTP.INTERNAL_SERVER_ERROR,
+      Some("application/json"),
+      Some(json(List("error" -> error)))
+    )
 
   def applyDynamicNamed(method: String)(properties: (String, Any)*): Result =
     method match {

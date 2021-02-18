@@ -45,24 +45,28 @@ package object express {
 //      }.toJSPromise
 
   def asyncHandler(future: => Future[Result]): RequestHandler =
-    (_, res: Response, next: js.Dynamic) =>
-      future.andThen {
-        case Success(r) => r.send(res)
-        case Failure(e) => next(e.getMessage)
-      }.toJSPromise
+    (_, res: Response, _: js.Dynamic) =>
+      future
+        .recover {
+          case e: Exception => response.internalServerError(e.getMessage)
+        }
+        .map(_.send(res))
+        .toJSPromise
 
   def asyncHandler(handler: SRequest => Future[Result]): RequestHandler =
     (req: Request, res: Response, next: js.Dynamic) =>
-      handler(new SRequest(req)).andThen {
-        case Success(r) => r.send(res)
-        case Failure(e) => next(e.getMessage)
-      }.toJSPromise
+      handler(new SRequest(req))
+        .recover {
+          case e: Exception => response.internalServerError(e.getMessage)
+        }
+        .map(_.send(res))
+        .toJSPromise
 
   def requestHandler(result: => Result): RequestHandler = { (_, res: Response, next: js.Dynamic) =>
     try {
       result.send(res)
     } catch {
-      case e: Exception => next(e.getMessage)
+      case e: Exception => response.internalServerError(e.getMessage)
     }
   }
 
@@ -70,7 +74,7 @@ package object express {
     try {
       handler(new SRequest(req)).send(res)
     } catch {
-      case e: Exception => next(e.getMessage)
+      case e: Exception => response.internalServerError(e.getMessage)
     }
   }
 
