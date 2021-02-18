@@ -127,7 +127,12 @@ package object express {
         case p: Product     => jsonObject(p.productElementNames zip p.productIterator toList)
         case _: String | _: Instant =>
           buf += '"'
-          buf ++= value.toString.replace("\\", "\\\\").replace("\"", "\\\"")
+          buf ++= value.toString
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\t", "\\t")
+            .replace("\n", "\\n")
+            .replace("\r", "")
           buf += '"'
         case d: js.Date =>
           buf += '"'
