@@ -1,8 +1,8 @@
 name := "express"
 
-version := "0.1.0-snapshot.60"
+version := "0.1.0-snapshot.61"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.5"
 
 scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials", "-language:dynamics", "-Xasync")
 
@@ -24,12 +24,6 @@ enablePlugins(ScalaJSPlugin)
 
 enablePlugins(ScalablyTypedConverterPlugin)
 
-//enablePlugins(ScalablyTypedConverterGenSourcePlugin)
-//
-//stMinimize := Selection.All
-//
-//stOutputPackage := "com.vinctus.express.facade"
-
 Test / scalaJSUseMainModuleInitializer := true
 
 Test / scalaJSUseTestModuleInitializer := false
@@ -40,7 +34,7 @@ libraryDependencies ++= Seq(
 //  "org.scala-lang.modules" %%% "scala-xml" % "1.2.0"
 )
 
-npmDependencies in Compile ++= Seq(
+Compile / npmDependencies ++= Seq(
   "@types/node" -> "14.14.10"
 //  "@types/express" -> "4.17.9",
 
@@ -57,15 +51,15 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.vinctus" %%% "sjs-utils" % "0.1.0-snapshot.14",
+  "com.vinctus" %%% "sjs-utils" % "0.1.0-snapshot.22",
   "io.github.cquiroz" %%% "scala-java-time" % "2.0.0" % "test"
 )
 
-mainClass in (Compile, run) := Some( s"${organization.value}.${name.value.replace('-', '_')}.Main" )
+Test / mainClass := Some( s"${organization.value}.${name.value.replace('-', '_')}.Main" )
 
 publishMavenStyle := true
 
-publishArtifact in Test := false
+Test / publishArtifact := false
 
 pomIncludeRepository := { _ => false }
 
